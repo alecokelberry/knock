@@ -1,0 +1,318 @@
+// Activities → All Activities: the last 16 touches on Vantage's households, newest first, each logged by the rep who
+// works the home (or partner relations, for Ridgeline's service updates). They match the homeowners' own timelines
+// (contacts.ts). Up next and Later today are Today's schedule (today.ts).
+
+export type ActivityGroup = "Today" | "Yesterday" | "This week" | "Earlier"
+/** The tabs after All: Doors, Callbacks, Texts, Services, Notes. Each activity belongs to exactly one. */
+type ActivityKind = "Doors" | "Callbacks" | "Texts" | "Services" | "Notes"
+
+export type Activity = {
+  /** ACT-2841 (the copy chip in the expanded body). */
+  id: string
+  group: ActivityGroup
+  kind: ActivityKind
+  title: string
+  /** The badge beside the title, and its dot class (bg-success, bg-warning, bg-primary, bg-muted-foreground/60). */
+  status: string
+  dot: string
+  /** Lucide icon in the timeline node. */
+  icon: string
+  /** The homeowner, and the address under it */
+  household: string
+  address: string
+  /** "9:12 AM", "Tue 5:02 PM", "Jul 9". */
+  time: string
+  /** The line in the expanded body. */
+  text: string
+  /** Team member id, with the role printed under the name. */
+  ownerId: string
+  ownerRole: string
+  /** The first two open on load; the rest start collapsed. */
+  defaultOpen: boolean
+}
+
+export const ACTIVITY_TABS = [
+  "All",
+  "Doors",
+  "Callbacks",
+  "Texts",
+  "Services",
+  "Notes",
+] as const
+export const ACTIVITY_GROUPS: ActivityGroup[] = [
+  "Today",
+  "Yesterday",
+  "This week",
+  "Earlier",
+]
+/** The Log activity dialog: Type, Outcome (Logged first) and When. */
+export const ACTIVITY_TYPES = ["Knock", "Callback", "Text", "Service", "Note"]
+export const ACTIVITY_OUTCOMES = [
+  "Logged",
+  "Pitched",
+  "Signed",
+  "Callback set",
+  "Not home",
+  "Not interested",
+]
+export const ACTIVITY_WHEN = ["Today", "Yesterday", "This week"]
+
+/** The 16 activities, newest first (4 today, 4 yesterday, 5 this week, 3 earlier): "16 activities in view". */
+export const ACTIVITIES: Activity[] = [
+  {
+    id: "ACT-2841",
+    group: "Today",
+    kind: "Callbacks",
+    title: "Callback confirmed",
+    status: "Tonight 6:30",
+    dot: "bg-primary",
+    icon: "calendar-clock",
+    household: "Harriet Lawson",
+    address: "612 N Cottonwood Bench Rd",
+    time: "9:05 AM",
+    text: "Harriet texted back: her husband is home by six. Darnell brings the termite sheet too.",
+    ownerId: "darnell-brooks",
+    ownerRole: "Team Leader",
+    defaultOpen: true,
+  },
+  {
+    id: "ACT-2840",
+    group: "Today",
+    kind: "Texts",
+    title: "Price re-sent",
+    status: "Delivered",
+    dot: "bg-muted-foreground/60",
+    icon: "message-square",
+    household: "Valentina Ospina",
+    address: "7719 E Palo Verde Dr",
+    time: "8:48 AM",
+    text: "Haruka re-sent the Bi-Monthly price with the free re-treat terms before tomorrow's callback.",
+    ownerId: "haruka-mori",
+    ownerRole: "Sales Rep",
+    defaultOpen: true,
+  },
+  {
+    id: "ACT-2839",
+    group: "Today",
+    kind: "Services",
+    title: "First service booked",
+    status: "Scheduled",
+    dot: "bg-primary",
+    icon: "calendar-check",
+    household: "Nathan Pryce",
+    address: "2890 E Sagebrush Ct",
+    time: "8:30 AM",
+    text: "Ridgeline has Nathan first on Friday's route; the gate code is on the work order.",
+    ownerId: "grant-lowell",
+    ownerRole: "Partner Relations",
+    defaultOpen: false,
+  },
+  {
+    id: "ACT-2838",
+    group: "Today",
+    kind: "Notes",
+    title: "Cancellation risk",
+    status: "Watch",
+    dot: "bg-warning",
+    icon: "triangle-alert",
+    household: "Joon Park",
+    address: "1942 Glen Laurel Dr",
+    time: "8:12 AM",
+    text: "Joon asked about cancelling. Meera is back tonight, before the window closes Friday.",
+    ownerId: "meera-iyer",
+    ownerRole: "Sales Rep",
+    defaultOpen: false,
+  },
+  {
+    id: "ACT-2837",
+    group: "Yesterday",
+    kind: "Doors",
+    title: "Pitched",
+    status: "Price left",
+    dot: "bg-muted-foreground/60",
+    icon: "door-open",
+    household: "Graham Pritchard",
+    address: "1180 S Riverbend Way",
+    time: "Wed 7:40 PM",
+    text: "Quarterly Pest priced at the door; Graham wants a Saturday first service.",
+    ownerId: "kyle-bennett",
+    ownerRole: "Sales Rep",
+    defaultOpen: false,
+  },
+  {
+    id: "ACT-2836",
+    group: "Yesterday",
+    kind: "Doors",
+    title: "Pitched",
+    status: "Callback set",
+    dot: "bg-warning",
+    icon: "door-open",
+    household: "Harriet Lawson",
+    address: "612 N Cottonwood Bench Rd",
+    time: "Wed 6:15 PM",
+    text: "Earwigs in the garden beds and mosquitoes on the deck. Her husband decides; back tonight at 6:30.",
+    ownerId: "darnell-brooks",
+    ownerRole: "Team Leader",
+    defaultOpen: false,
+  },
+  {
+    id: "ACT-2835",
+    group: "Yesterday",
+    kind: "Callbacks",
+    title: "Callback",
+    status: "Not home",
+    dot: "bg-warning",
+    icon: "door-closed",
+    household: "Kenji Watanabe",
+    address: "4407 Pine Needle Ct",
+    time: "Wed 5:30 PM",
+    text: "No answer at the door; Toby left the termite sheet and tries again Saturday.",
+    ownerId: "toby-marsh",
+    ownerRole: "Sales Rep",
+    defaultOpen: false,
+  },
+  {
+    id: "ACT-2834",
+    group: "Yesterday",
+    kind: "Services",
+    title: "Initial service done",
+    status: "Serviced",
+    dot: "bg-success",
+    icon: "spray-can",
+    household: "Naomie Pierre",
+    address: "5140 N 38th Pl",
+    time: "Wed 2:10 PM",
+    text: "Ridgeline's file shows the initial done: scorpion treatment along the block wall.",
+    ownerId: "owen-fletcher",
+    ownerRole: "Sales Rep",
+    defaultOpen: false,
+  },
+  {
+    id: "ACT-2833",
+    group: "This week",
+    kind: "Doors",
+    title: "Agreement signed",
+    status: "Signed",
+    dot: "bg-success",
+    icon: "file-pen-line",
+    household: "Margaret Doyle",
+    address: "640 N Cottonwood Bench Rd",
+    time: "Tue 7:52 PM",
+    text: "Quarterly Pest with Termite Monitoring on the tablet; the three-day window ends Friday.",
+    ownerId: "darnell-brooks",
+    ownerRole: "Team Leader",
+    defaultOpen: false,
+  },
+  {
+    id: "ACT-2832",
+    group: "This week",
+    kind: "Doors",
+    title: "Agreement signed",
+    status: "Signed",
+    dot: "bg-success",
+    icon: "file-pen-line",
+    household: "Joon Park",
+    address: "1942 Glen Laurel Dr",
+    time: "Tue 6:20 PM",
+    text: "Bi-Monthly Pest, Meera's third sale this week.",
+    ownerId: "meera-iyer",
+    ownerRole: "Sales Rep",
+    defaultOpen: false,
+  },
+  {
+    id: "ACT-2831",
+    group: "This week",
+    kind: "Texts",
+    title: "Price left",
+    status: "Delivered",
+    dot: "bg-muted-foreground/60",
+    icon: "message-square",
+    household: "Ingrid Nyberg",
+    address: "305 Hollow Oak Ln",
+    time: "Tue 7:05 PM",
+    text: "Quarterly Pest with Rodent Exclusion: $598 at the first visit, then $119 a quarter and $35 a month.",
+    ownerId: "ayesha-malik",
+    ownerRole: "Team Leader",
+    defaultOpen: false,
+  },
+  {
+    id: "ACT-2830",
+    group: "This week",
+    kind: "Services",
+    title: "Initial service done",
+    status: "Serviced",
+    dot: "bg-success",
+    icon: "spray-can",
+    household: "Tereza Horak",
+    address: "1196 S Riverbend Way",
+    time: "Tue 11:30 AM",
+    text: "The technician took down a wasp nest under the deck on the first visit.",
+    ownerId: "kyle-bennett",
+    ownerRole: "Sales Rep",
+    defaultOpen: false,
+  },
+  {
+    id: "ACT-2829",
+    group: "This week",
+    kind: "Services",
+    title: "Initial service done",
+    status: "Serviced",
+    dot: "bg-success",
+    icon: "spray-can",
+    household: "Johan Lindberg",
+    address: "318 Hollow Oak Ln",
+    time: "Mon 3:45 PM",
+    text: "Fourteen termite stations around the foundation.",
+    ownerId: "ayesha-malik",
+    ownerRole: "Team Leader",
+    defaultOpen: false,
+  },
+  {
+    id: "ACT-2828",
+    group: "Earlier",
+    kind: "Notes",
+    title: "Win-back",
+    status: "Logged",
+    dot: "bg-muted-foreground/60",
+    icon: "notebook-pen",
+    household: "Pablo Navarro",
+    address: "3310 W Desert Willow Ln",
+    time: "Jul 9",
+    text: "A 2025 customer, open to coming back if the initial is waived. The request is with Mateo.",
+    ownerId: "sam-okafor",
+    ownerRole: "Team Leader",
+    defaultOpen: false,
+  },
+  {
+    id: "ACT-2827",
+    group: "Earlier",
+    kind: "Callbacks",
+    title: "Callback",
+    status: "Signed",
+    dot: "bg-success",
+    icon: "phone-call",
+    household: "Chiara Romano",
+    address: "4415 Pine Needle Ct",
+    time: "Jul 9",
+    text: "Called back after Harpreet Gill's referral and signed Quarterly Pest with Mosquito Season.",
+    ownerId: "toby-marsh",
+    ownerRole: "Sales Rep",
+    defaultOpen: false,
+  },
+  {
+    id: "ACT-2826",
+    group: "Earlier",
+    kind: "Notes",
+    title: "Referral",
+    status: "Logged",
+    dot: "bg-muted-foreground/60",
+    icon: "sparkles",
+    household: "Layla Khoury",
+    address: "1906 Glen Laurel Dr",
+    time: "Jul 8",
+    text: "Jiwoo Han next door passed along Layla's number.",
+    ownerId: "meera-iyer",
+    ownerRole: "Sales Rep",
+    defaultOpen: false,
+  },
+]
